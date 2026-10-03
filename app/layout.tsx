@@ -25,9 +25,10 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
     ],
     shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    apple: "/icon.png",
   },
   description:
     "NOVA creates architectural tailoring, pure Mongolian cashmere knitwear, and tactile accessories designed for enduring distinction.",
