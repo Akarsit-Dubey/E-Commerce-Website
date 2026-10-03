@@ -10,7 +10,7 @@ import { FadeIn } from "@/components/motion/MotionConfig";
 export function TestimonialsSection() {
   return (
     <section className="py-24 bg-[var(--surface)]/50 border-t border-[var(--border)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <FadeIn>
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">

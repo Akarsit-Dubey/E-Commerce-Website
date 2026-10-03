@@ -19,13 +19,24 @@ export function Footer() {
 
   return (
     <footer className="bg-[var(--surface)] text-[var(--foreground)] border-t border-[var(--border)] pt-16 pb-12 mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-[var(--border)]">
           {/* Brand Info & Newsletter */}
           <div className="lg:col-span-2 space-y-4">
-            <span className="text-2xl font-extrabold tracking-[0.25em] text-[var(--foreground)]">
-              NOVA
-            </span>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 shrink-0 rounded-md overflow-hidden shadow-xs">
+                <svg viewBox="0 0 32 32" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="32" rx="7.5" fill="#0C0D10" />
+                  <rect x="0.5" y="0.5" width="31" height="31" rx="7" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1" />
+                  <path d="M7.5 8.5H11.5L20.5 20.2V8.5H24.5V23.5H20.5L11.5 11.8V23.5H7.5Z" fill="#FAF9F6" />
+                  <path d="M24.5 4.2Q24.5 7.8 21 7.8Q24.5 7.8 24.5 11.4Q24.5 7.8 28 7.8Q24.5 7.8 24.5 4.2Z" fill="#C9744D" />
+                  <circle cx="24.5" cy="7.8" r="0.75" fill="#FFFFFF" />
+                </svg>
+              </div>
+              <span className="text-2xl font-extrabold tracking-[0.25em] text-[var(--foreground)]">
+                NOVA
+              </span>
+            </div>
             <p className="text-xs uppercase tracking-widest text-[var(--muted-foreground)]">
               Modern essentials designed for everyday life.
             </p>
@@ -188,7 +199,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--muted-foreground)]">
-          <p>© {new Date().getFullYear()} NOVA Studio Inc. All rights reserved. Demo e-commerce showcase.</p>
+          <p>© 2026 NOVA Studio Inc. All rights reserved. Demo e-commerce showcase.</p>
           <div className="flex items-center gap-6">
             <span className="cursor-default">USD ($) — Global</span>
             <Link href="/about" className="hover:text-[var(--foreground)] transition-colors">

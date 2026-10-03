@@ -8,7 +8,7 @@ import { FadeIn } from "@/components/motion/MotionConfig";
 
 export function BrandStorySection() {
   return (
-    <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         {/* Left side: Editorial Typography */}
         <FadeIn direction="left" className="lg:col-span-6 space-y-6">

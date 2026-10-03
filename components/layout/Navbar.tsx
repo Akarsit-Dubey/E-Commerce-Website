@@ -69,7 +69,7 @@ export function Navbar() {
             : "bg-[var(--background)] border-transparent"
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Mobile hamburger */}
             <div className="flex items-center lg:hidden">
@@ -87,14 +87,25 @@ export function Navbar() {
             <div className="flex items-center">
               <Link
                 href="/"
-                className="group flex flex-col items-center sm:items-start text-left"
+                className="group flex items-center gap-2.5 sm:gap-3 text-left"
               >
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-[0.25em] text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
-                  NOVA
-                </span>
-                <span className="hidden sm:block text-[9px] uppercase tracking-[0.3em] text-[var(--muted-foreground)] -mt-1 font-medium">
-                  Modern Essentials
-                </span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 relative rounded-md overflow-hidden shadow-xs transition-transform duration-300 group-hover:scale-105">
+                  <svg viewBox="0 0 32 32" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="7.5" fill="#0C0D10" />
+                    <rect x="0.5" y="0.5" width="31" height="31" rx="7" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1" />
+                    <path d="M7.5 8.5H11.5L20.5 20.2V8.5H24.5V23.5H20.5L11.5 11.8V23.5H7.5Z" fill="#FAF9F6" />
+                    <path d="M24.5 4.2Q24.5 7.8 21 7.8Q24.5 7.8 24.5 11.4Q24.5 7.8 28 7.8Q24.5 7.8 24.5 4.2Z" fill="#C9744D" />
+                    <circle cx="24.5" cy="7.8" r="0.75" fill="#FFFFFF" />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl sm:text-2xl font-extrabold tracking-[0.25em] text-[var(--foreground)] transition-colors group-hover:text-[var(--accent)]">
+                    NOVA
+                  </span>
+                  <span className="hidden sm:block text-[8.5px] uppercase tracking-[0.3em] text-[var(--muted-foreground)] -mt-0.5 font-medium">
+                    Modern Essentials
+                  </span>
+                </div>
               </Link>
             </div>
 

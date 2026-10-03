@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { PRODUCTS } from "@/data/products";
+import { CATEGORIES } from "@/data/categories";
 import { FilterState, ProductCategory, SortOption } from "@/types/product";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductFilters } from "@/components/product/ProductFilters";
@@ -13,10 +15,12 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { FadeIn } from "@/components/motion/MotionConfig";
 import { SlidersHorizontal, LayoutGrid, List, X, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 8;
 
 export function ShopClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") as ProductCategory | null;
   const shouldReduceMotion = useReducedMotion();
@@ -147,7 +151,7 @@ export function ShopClient() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12">
       {/* Breadcrumbs */}
       <Breadcrumbs
         items={[
@@ -193,6 +197,58 @@ export function ShopClient() {
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
+          </div>
+        </div>
+
+        {/* Visual Discipline Quick Selector */}
+        <div className="py-4 border-b border-[var(--border)] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 min-w-max">
+            <button
+              onClick={() => {
+                setFilters((prev) => ({ ...prev, category: "all" }));
+                router.replace("/shop");
+              }}
+              className={cn(
+                "flex items-center gap-2 px-3.5 py-1.5 rounded-xs border text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer",
+                filters.category === "all"
+                  ? "bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)] shadow-xs"
+                  : "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/40"
+              )}
+            >
+              <span>All Disciplines</span>
+              <span className="text-[10px] opacity-75 font-mono">({PRODUCTS.length})</span>
+            </button>
+
+            {CATEGORIES.map((cat) => {
+              const isSelected = filters.category === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setFilters((prev) => ({ ...prev, category: cat.id }));
+                    router.replace(`/shop?category=${cat.id}`);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-1.5 rounded-xs border text-xs font-medium transition-all cursor-pointer",
+                    isSelected
+                      ? "bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)] shadow-xs font-semibold"
+                      : "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/40"
+                  )}
+                >
+                  <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0 border border-black/10 dark:border-white/10">
+                    <Image
+                      src={cat.image}
+                      alt={cat.name}
+                      fill
+                      sizes="16px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <span>{cat.name}</span>
+                  <span className="text-[10px] opacity-75 font-mono">({cat.itemCount})</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </FadeIn>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="novaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141519"/>
+      <stop offset="100%" stop-color="#090A0D"/>
+    </linearGradient>
+    <linearGradient id="novaAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E28E65"/>
+      <stop offset="100%" stop-color="#B25D38"/>
+    </linearGradient>
+    <filter id="starGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="#E28E65" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Deep Onyx Luxury Squircle with subtle border ring -->
+  <rect width="32" height="32" rx="7.5" fill="url(#novaBg)"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.14)" stroke-width="1"/>
+
+  <!-- Architectural 'N' Monogram -->
+  <path d="M7.5 8.5H11.5L20.5 20.2V8.5H24.5V23.5H20.5L11.5 11.8V23.5H7.5Z" fill="#FAF9F6"/>
+
+  <!-- Radiant 4-Point NOVA Celestial Star Flare at Upper Right Apex -->
+  <path d="M24.5 4.2Q24.5 7.8 21 7.8Q24.5 7.8 24.5 11.4Q24.5 7.8 28 7.8Q24.5 7.8 24.5 4.2Z" fill="url(#novaAccent)" filter="url(#starGlow)"/>
+
+  <!-- Center Core Flare Point -->
+  <circle cx="24.5" cy="7.8" r="0.75" fill="#FFFFFF"/>
+</svg>

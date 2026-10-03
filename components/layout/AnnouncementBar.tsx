@@ -25,7 +25,7 @@ export function AnnouncementBar() {
 
   return (
     <aside aria-label="Announcement" className="relative z-40 bg-[var(--surface)] text-[var(--foreground)] border-b border-[var(--border)] text-[11px] font-medium tracking-widest uppercase py-2 px-4 transition-all">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex items-center justify-between">
         <button
           onClick={() =>
             setCurrentIndex(

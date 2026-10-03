@@ -30,7 +30,7 @@ export function FadeIn({
   const shouldReduceMotion = useReducedMotion();
 
   const getOffset = () => {
-    if (shouldReduceMotion || direction === "none") return { x: 0, y: 0 };
+    if (direction === "none") return { x: 0, y: 0 };
     switch (direction) {
       case "up":
         return { x: 0, y: distance };
@@ -53,8 +53,8 @@ export function FadeIn({
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: viewportOnce, margin: "-40px" }}
       transition={{
-        duration: shouldReduceMotion ? 0.2 : duration,
-        delay,
+        duration: shouldReduceMotion ? 0.1 : duration,
+        delay: shouldReduceMotion ? 0 : delay,
         ease: editorialEase,
       }}
       className={className}
@@ -113,12 +113,12 @@ export function StaggerItem({
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+        hidden: { opacity: 0, y: 20 },
         visible: {
           opacity: 1,
           y: 0,
           transition: {
-            duration: shouldReduceMotion ? 0.2 : 0.5,
+            duration: shouldReduceMotion ? 0.1 : 0.5,
             ease: editorialEase,
           },
         },
@@ -135,9 +135,9 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: editorialEase }}
+      transition={{ duration: shouldReduceMotion ? 0.1 : 0.35, ease: editorialEase }}
     >
       {children}
     </motion.div>

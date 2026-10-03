@@ -22,6 +22,13 @@ export const metadata: Metadata = {
     default: "NOVA | Modern Essentials for Everyday Life",
     template: "%s | NOVA",
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   description:
     "NOVA creates architectural tailoring, pure Mongolian cashmere knitwear, and tactile accessories designed for enduring distinction.",
   keywords: [
@@ -73,7 +80,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--foreground)] selection:text-[var(--background)]">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--foreground)] selection:text-[var(--background)]"
+      >
         <Providers>
           <AnnouncementBar />
           <Navbar />

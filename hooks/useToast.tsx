@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { X, CheckCircle2, AlertCircle, Info, ShoppingBag } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { editorialEase } from "@/components/motion/MotionConfig";
 
 export type ToastType = "success" | "error" | "info" | "cart";
 
@@ -26,6 +28,7 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const shouldReduceMotion = useReducedMotion();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismissToast = useCallback((id: string) => {
@@ -58,55 +61,62 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         role="region"
         aria-label="Notifications"
       >
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className="pointer-events-auto flex items-start gap-3 p-4 rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-lg backdrop-blur-md transition-all animate-in fade-in slide-in-from-bottom-3 duration-300"
-          >
-            <div className="shrink-0 mt-0.5">
-              {toast.type === "success" && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              )}
-              {toast.type === "error" && (
-                <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
-              )}
-              {toast.type === "info" && (
-                <Info className="w-5 h-5 text-[var(--accent)]" />
-              )}
-              {toast.type === "cart" && (
-                <ShoppingBag className="w-5 h-5 text-[var(--accent)]" />
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium leading-snug">{toast.title}</p>
-              {toast.message && (
-                <p className="text-xs text-[var(--muted-foreground)] mt-0.5 leading-relaxed">
-                  {toast.message}
-                </p>
-              )}
-              {toast.action && (
-                <button
-                  onClick={() => {
-                    toast.action?.onClick();
-                    dismissToast(toast.id);
-                  }}
-                  className="mt-2 text-xs font-semibold uppercase tracking-wider text-[var(--accent)] hover:underline"
-                >
-                  {toast.action.label}
-                </button>
-              )}
-            </div>
-
-            <button
-              onClick={() => dismissToast(toast.id)}
-              aria-label="Dismiss notification"
-              className="shrink-0 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+        <AnimatePresence mode="popLayout">
+          {toasts.map((toast) => (
+            <motion.div
+              key={toast.id}
+              layout
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.95 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 8 }}
+              transition={{ duration: 0.25, ease: editorialEase }}
+              className="pointer-events-auto flex items-start gap-3 p-4 rounded-xs border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-lg backdrop-blur-md transition-all"
             >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+              <div className="shrink-0 mt-0.5">
+                {toast.type === "success" && (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                )}
+                {toast.type === "error" && (
+                  <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                )}
+                {toast.type === "info" && (
+                  <Info className="w-5 h-5 text-[var(--accent)]" />
+                )}
+                {toast.type === "cart" && (
+                  <ShoppingBag className="w-5 h-5 text-[var(--accent)]" />
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold leading-snug">{toast.title}</p>
+                {toast.message && (
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5 leading-relaxed">
+                    {toast.message}
+                  </p>
+                )}
+                {toast.action && (
+                  <button
+                    onClick={() => {
+                      toast.action?.onClick();
+                      dismissToast(toast.id);
+                    }}
+                    className="mt-2 text-xs font-semibold uppercase tracking-wider text-[var(--accent)] hover:underline cursor-pointer"
+                  >
+                    {toast.action.label}
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={() => dismissToast(toast.id)}
+                aria-label="Dismiss notification"
+                className="shrink-0 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-0.5 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );
