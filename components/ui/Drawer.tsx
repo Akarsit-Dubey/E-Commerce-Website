@@ -2,7 +2,9 @@
 
 import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { editorialEase } from "@/components/motion/MotionConfig";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ export function Drawer({
   footer,
 }: DrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   // Close on Escape & Lock body scroll
   useEffect(() => {
@@ -45,68 +48,108 @@ export function Drawer({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
-  const sideAnimations = {
-    right: "right-0 top-0 bottom-0 max-w-md w-full animate-in slide-in-from-right duration-300",
-    left: "left-0 top-0 bottom-0 max-w-md w-full animate-in slide-in-from-left duration-300",
-    bottom: "bottom-0 left-0 right-0 max-h-[85vh] w-full animate-in slide-in-from-bottom duration-300",
+  const getVariants = () => {
+    if (shouldReduceMotion) {
+      return {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 },
+        exit: { opacity: 0 },
+      };
+    }
+    if (side === "right") {
+      return {
+        hidden: { x: "100%", opacity: 0.5 },
+        visible: { x: 0, opacity: 1 },
+        exit: { x: "100%", opacity: 0.5 },
+      };
+    }
+    if (side === "left") {
+      return {
+        hidden: { x: "-100%", opacity: 0.5 },
+        visible: { x: 0, opacity: 1 },
+        exit: { x: "-100%", opacity: 0.5 },
+      };
+    }
+    return {
+      hidden: { y: "100%", opacity: 0.5 },
+      visible: { y: 0, opacity: 1 },
+      exit: { y: "100%", opacity: 0.5 },
+    };
   };
 
+  const variants = getVariants();
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title || "Drawer panel"}
-    >
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-300"
-        aria-hidden="true"
-      />
-
-      {/* Sheet Content */}
-      <div
-        ref={drawerRef}
-        className={cn(
-          "fixed z-50 flex flex-col bg-[var(--background)] border-[var(--border)] shadow-2xl focus:outline-none",
-          side === "right" && "border-l",
-          side === "left" && "border-r",
-          side === "bottom" && "border-t rounded-t-xl",
-          sideAnimations[side],
-          className
-        )}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-          {title ? (
-            <h2 className="text-base font-semibold tracking-tight text-[var(--foreground)]">
-              {title}
-            </h2>
-          ) : (
-            <div />
-          )}
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 flex"
+          role="dialog"
+          aria-modal="true"
+          aria-label={title || "Drawer panel"}
+        >
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={onClose}
-            aria-label="Close drawer"
-            className="p-1.5 -mr-1.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors rounded-sm hover:bg-[var(--surface)]"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            aria-hidden="true"
+          />
+
+          {/* Sheet Content */}
+          <motion.div
+            ref={drawerRef}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
+            transition={{
+              type: shouldReduceMotion ? "tween" : "spring",
+              damping: 32,
+              stiffness: 320,
+              ease: editorialEase,
+            }}
+            className={cn(
+              "fixed z-50 flex flex-col bg-[var(--background)] border-[var(--border)] shadow-2xl focus:outline-none",
+              side === "right" && "right-0 top-0 bottom-0 max-w-md w-full border-l",
+              side === "left" && "left-0 top-0 bottom-0 max-w-md w-full border-r",
+              side === "bottom" && "bottom-0 left-0 right-0 max-h-[85vh] w-full border-t rounded-t-xl",
+              className
+            )}
           >
-            <X className="w-5 h-5" />
-          </button>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+              {title ? (
+                <h2 className="text-sm uppercase tracking-wider font-bold text-[var(--foreground)]">
+                  {title}
+                </h2>
+              ) : (
+                <div />
+              )}
+              <button
+                onClick={onClose}
+                aria-label="Close drawer"
+                className="p-1.5 -mr-1.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors rounded-xs hover:bg-[var(--surface)] active:scale-95"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
+
+            {/* Optional Footer */}
+            {footer && (
+              <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--surface)]/50">
+                {footer}
+              </div>
+            )}
+          </motion.div>
         </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
-
-        {/* Optional Footer */}
-        {footer && (
-          <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--surface)]/50">
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 }

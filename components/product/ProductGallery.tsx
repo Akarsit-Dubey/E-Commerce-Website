@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { editorialEase } from "@/components/motion/MotionConfig";
 
 interface ProductGalleryProps {
   images: string[];
@@ -13,6 +15,7 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const nextImage = () => {
     setActiveIndex((prev) => (prev + 1) % images.length);
@@ -36,7 +39,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               className={cn(
                 "relative w-16 h-20 md:w-20 md:h-24 shrink-0 rounded-xs overflow-hidden border transition-all cursor-pointer",
                 activeIndex === idx
-                  ? "border-[var(--foreground)] ring-1 ring-[var(--foreground)]"
+                  ? "border-[var(--foreground)]"
                   : "border-[var(--border)] opacity-60 hover:opacity-100"
               )}
             >
@@ -47,21 +50,39 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 sizes="80px"
                 className="object-cover"
               />
+              {activeIndex === idx && (
+                <motion.div
+                  layoutId="activePdpThumb"
+                  className="absolute inset-0 border-2 border-[var(--foreground)]"
+                  transition={{ type: shouldReduceMotion ? "tween" : "spring", damping: 30, stiffness: 350 }}
+                />
+              )}
             </button>
           ))}
         </div>
       )}
 
-      {/* Main Feature Image Container */}
+      {/* Main Feature Image Container with Crossfade */}
       <div className="relative flex-1 aspect-[3/4] bg-[var(--surface)] rounded-xs overflow-hidden border border-[var(--border)] group">
-        <Image
-          src={images[activeIndex]}
-          alt={`${productName} - View ${activeIndex + 1}`}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-500 ease-out"
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: editorialEase }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={images[activeIndex]}
+              alt={`${productName} - View ${activeIndex + 1}`}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
 
         {/* Prev / Next Chevrons on Hover */}
         {images.length > 1 && (
@@ -70,7 +91,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               type="button"
               onClick={prevImage}
               aria-label="Previous photo"
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[var(--background)]/80 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[var(--background)]/85 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm cursor-pointer active:scale-95"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -78,7 +99,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               type="button"
               onClick={nextImage}
               aria-label="Next photo"
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[var(--background)]/80 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-[var(--background)]/85 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm cursor-pointer active:scale-95"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -90,7 +111,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           type="button"
           onClick={() => setIsLightboxOpen(true)}
           aria-label="Open fullscreen image view"
-          className="absolute top-3 right-3 p-2 rounded-full bg-[var(--background)]/80 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm"
+          className="absolute top-3 right-3 p-2.5 rounded-full bg-[var(--background)]/85 text-[var(--foreground)] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--background)] shadow-sm cursor-pointer active:scale-95"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
@@ -102,10 +123,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               <span
                 key={idx}
                 className={cn(
-                  "w-1.5 h-1.5 rounded-full transition-all",
+                  "h-1.5 rounded-full transition-all",
                   activeIndex === idx
                     ? "w-4 bg-[var(--foreground)]"
-                    : "bg-[var(--foreground)]/30"
+                    : "w-1.5 bg-[var(--foreground)]/30"
                 )}
               />
             ))}
@@ -113,33 +134,42 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         )}
       </div>
 
-      {/* Lightbox Modal */}
-      {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => setIsLightboxOpen(false)}
-        >
-          <button
+      {/* Lightbox Modal with AnimatePresence */}
+      <AnimatePresence>
+        {isLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setIsLightboxOpen(false)}
-            aria-label="Close zoom modal"
-            className="absolute top-6 right-6 p-2 text-white/80 hover:text-white transition-colors"
           >
-            <X className="w-6 h-6" />
-          </button>
+            <button
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Close zoom modal"
+              className="absolute top-6 right-6 p-2 text-white/80 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
 
-          <div
-            className="relative max-w-4xl w-full h-[85vh] select-none"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={images[activeIndex]}
-              alt={productName}
-              fill
-              className="object-contain"
-            />
-          </div>
-        </div>
-      )}
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              transition={{ duration: 0.25 }}
+              className="relative max-w-4xl w-full h-[85vh] select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={images[activeIndex]}
+                alt={productName}
+                fill
+                className="object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

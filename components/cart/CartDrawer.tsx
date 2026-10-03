@@ -2,11 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Drawer } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/hooks/useCart";
 import { CartItem } from "./CartItem";
 import { formatPrice } from "@/lib/utils";
+import { editorialEase } from "@/components/motion/MotionConfig";
 import { ShoppingBag, ArrowRight, Tag, Bookmark, CheckCircle2 } from "lucide-react";
 
 export function CartDrawer() {
@@ -29,6 +31,7 @@ export function CartDrawer() {
 
   const [promoInput, setPromoInput] = useState("");
   const [showSaved, setShowSaved] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +61,14 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xs text-xs">
                   <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
                     <Tag className="w-3.5 h-3.5" />
-                    <span>Code {promoCode} applied ({summary.discount > 0 && `-${formatPrice(summary.discount)}`})</span>
+                    <span>
+                      Code {promoCode} applied (
+                      {summary.discount > 0 && `-${formatPrice(summary.discount)}`})
+                    </span>
                   </div>
                   <button
                     onClick={removePromoCode}
-                    className="text-xs text-[var(--muted-foreground)] hover:text-rose-600 underline font-medium"
+                    className="text-xs text-[var(--muted-foreground)] hover:text-rose-600 underline font-medium cursor-pointer"
                   >
                     Remove
                   </button>
@@ -142,7 +148,11 @@ export function CartDrawer() {
         <div className="bg-[var(--surface)] p-3 rounded-xs border border-[var(--border)] text-xs">
           {summary.remainingForFreeShipping > 0 ? (
             <p className="text-[var(--muted-foreground)] mb-2">
-              Add <strong className="text-[var(--foreground)] font-semibold">{formatPrice(summary.remainingForFreeShipping)}</strong> more to unlock complimentary global shipping.
+              Add{" "}
+              <strong className="text-[var(--foreground)] font-semibold">
+                {formatPrice(summary.remainingForFreeShipping)}
+              </strong>{" "}
+              more to unlock complimentary global shipping.
             </p>
           ) : (
             <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-medium mb-2">
@@ -151,9 +161,11 @@ export function CartDrawer() {
             </div>
           )}
           <div className="w-full h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[var(--accent)] transition-all duration-500 ease-out"
-              style={{ width: `${freeShippingProgress}%` }}
+            <motion.div
+              className="h-full bg-[var(--accent)]"
+              initial={false}
+              animate={{ width: `${freeShippingProgress}%` }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.6, ease: editorialEase }}
             />
           </div>
         </div>
@@ -177,19 +189,42 @@ export function CartDrawer() {
             </Link>
           </div>
         ) : (
-          /* Item List */
-          <div className="divide-y divide-transparent">
-            {items.map((item) => (
-              <CartItem
-                key={item.id}
-                item={item}
-                onUpdateQuantity={updateQuantity}
-                onRemove={removeItem}
-                onSaveForLater={saveForLater}
-                onCloseDrawer={closeCart}
-              />
-            ))}
-          </div>
+          /* Item List with Staggered Animations */
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: shouldReduceMotion ? 0 : 0.06,
+                },
+              },
+            }}
+            className="divide-y divide-transparent"
+          >
+            <AnimatePresence initial={false}>
+              {items.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <CartItem
+                    item={item}
+                    onUpdateQuantity={updateQuantity}
+                    onRemove={removeItem}
+                    onSaveForLater={saveForLater}
+                    onCloseDrawer={closeCart}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Saved For Later Accordion/Section */}
@@ -197,7 +232,7 @@ export function CartDrawer() {
           <div className="pt-6 border-t border-[var(--border)]">
             <button
               onClick={() => setShowSaved((prev) => !prev)}
-              className="flex items-center justify-between w-full py-2 text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+              className="flex items-center justify-between w-full py-2 text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] hover:text-[var(--accent)] transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-1.5">
                 <Bookmark className="w-3.5 h-3.5" />
@@ -209,7 +244,13 @@ export function CartDrawer() {
             </button>
 
             {showSaved && (
-              <div className="space-y-3 pt-3">
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-3 pt-3"
+              >
                 {savedItems.map((saved) => (
                   <div
                     key={saved.id}
@@ -220,19 +261,20 @@ export function CartDrawer() {
                         {saved.product.name}
                       </p>
                       <p className="text-[11px] text-[var(--muted-foreground)]">
-                        {saved.selectedColor.name} • {saved.selectedSize} • {formatPrice(saved.product.salePrice ?? saved.product.price)}
+                        {saved.selectedColor.name} • {saved.selectedSize} •{" "}
+                        {formatPrice(saved.product.salePrice ?? saved.product.price)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => moveToCart(saved.id)}
-                        className="text-[11px] font-semibold text-[var(--accent)] hover:underline"
+                        className="text-[11px] font-semibold text-[var(--accent)] hover:underline cursor-pointer"
                       >
                         Move to Bag
                       </button>
                       <button
                         onClick={() => removeSavedItem(saved.id)}
-                        className="text-xs text-[var(--muted-foreground)] hover:text-rose-600"
+                        className="text-xs text-[var(--muted-foreground)] hover:text-rose-600 cursor-pointer"
                         aria-label="Remove saved item"
                       >
                         ✕
@@ -240,7 +282,7 @@ export function CartDrawer() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         )}

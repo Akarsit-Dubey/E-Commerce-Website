@@ -10,6 +10,8 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import { PRODUCTS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { ShoppingBag, ArrowRight, Tag, Bookmark, CheckCircle2, ShieldCheck, Truck } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn, editorialEase } from "@/components/motion/MotionConfig";
 
 export default function CartPage() {
   const {
@@ -83,7 +85,7 @@ export default function CartPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="py-20 text-center space-y-4 max-w-md mx-auto">
+        <FadeIn className="py-20 text-center space-y-4 max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-[var(--surface)] flex items-center justify-center mx-auto text-[var(--muted-foreground)]">
             <ShoppingBag className="w-8 h-8 stroke-[1.5]" />
           </div>
@@ -96,7 +98,7 @@ export default function CartPage() {
           <Link href="/shop" className="inline-block pt-2">
             <Button size="lg">Discover Collections</Button>
           </Link>
-        </div>
+        </FadeIn>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           {/* Main items column */}
@@ -114,24 +116,36 @@ export default function CartPage() {
                 </div>
               )}
               <div className="w-full h-2 bg-[var(--border)] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[var(--accent)] transition-all duration-500 ease-out"
-                  style={{ width: `${freeShippingProgress}%` }}
+                <motion.div
+                  className="h-full bg-[var(--accent)]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${freeShippingProgress}%` }}
+                  transition={{ duration: 0.6, ease: editorialEase }}
                 />
               </div>
             </div>
 
             {/* Cart Items List */}
             <div className="divide-y divide-transparent">
-              {items.map((item) => (
-                <CartItem
-                  key={item.id}
-                  item={item}
-                  onUpdateQuantity={updateQuantity}
-                  onRemove={removeItem}
-                  onSaveForLater={saveForLater}
-                />
-              ))}
+              <AnimatePresence mode="popLayout" initial={false}>
+                {items.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96, height: 0, overflow: "hidden", marginBottom: 0 }}
+                    transition={{ duration: 0.25, ease: editorialEase }}
+                  >
+                    <CartItem
+                      item={item}
+                      onUpdateQuantity={updateQuantity}
+                      onRemove={removeItem}
+                      onSaveForLater={saveForLater}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
 
             {/* Saved For Later Items */}
@@ -143,40 +157,47 @@ export default function CartPage() {
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {savedItems.map((saved) => (
-                    <div
-                      key={saved.id}
-                      className="flex items-center gap-3 p-3 rounded-xs border border-[var(--border)] bg-[var(--surface)] text-xs"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-[var(--foreground)] truncate">
-                          {saved.product.name}
-                        </p>
-                        <p className="text-[11px] text-[var(--muted-foreground)]">
-                          {saved.selectedColor.name} • Size {saved.selectedSize}
-                        </p>
-                        <p className="font-medium text-[var(--foreground)] mt-1">
-                          {formatPrice(saved.product.salePrice ?? saved.product.price)}
-                        </p>
-                      </div>
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    {savedItems.map((saved) => (
+                      <motion.div
+                        key={saved.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9, height: 0, overflow: "hidden" }}
+                        transition={{ duration: 0.2, ease: editorialEase }}
+                        className="flex items-center gap-3 p-3 rounded-xs border border-[var(--border)] bg-[var(--surface)] text-xs"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-[var(--foreground)] truncate">
+                            {saved.product.name}
+                          </p>
+                          <p className="text-[11px] text-[var(--muted-foreground)]">
+                            {saved.selectedColor.name} • Size {saved.selectedSize}
+                          </p>
+                          <p className="font-medium text-[var(--foreground)] mt-1">
+                            {formatPrice(saved.product.salePrice ?? saved.product.price)}
+                          </p>
+                        </div>
 
-                      <div className="flex flex-col gap-1.5 shrink-0">
-                        <Button
-                          size="sm"
-                          onClick={() => moveToCart(saved.id)}
-                          className="text-[10px] h-7 px-2.5"
-                        >
-                          Move to Bag
-                        </Button>
-                        <button
-                          onClick={() => removeSavedItem(saved.id)}
-                          className="text-[10px] text-[var(--muted-foreground)] hover:text-rose-600 text-center"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                        <div className="flex flex-col gap-1.5 shrink-0">
+                          <Button
+                            size="sm"
+                            onClick={() => moveToCart(saved.id)}
+                            className="text-[10px] h-7 px-2.5"
+                          >
+                            Move to Bag
+                          </Button>
+                          <button
+                            onClick={() => removeSavedItem(saved.id)}
+                            className="text-[10px] text-[var(--muted-foreground)] hover:text-rose-600 text-center cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               </div>
             )}
@@ -281,7 +302,7 @@ export default function CartPage() {
       )}
 
       {/* Recommended Products */}
-      <section className="py-20 border-t border-[var(--border)] mt-20">
+      <FadeIn className="py-20 border-t border-[var(--border)] mt-20">
         <div className="flex items-center justify-between mb-8">
           <div>
             <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
@@ -293,13 +314,13 @@ export default function CartPage() {
           </div>
           <Link
             href="/shop"
-            className="text-xs uppercase tracking-wider font-semibold text-[var(--foreground)] hover:text-[var(--accent)]"
+            className="text-xs uppercase tracking-wider font-semibold text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
           >
             Explore All
           </Link>
         </div>
         <ProductGrid products={recommended} columns={4} />
-      </section>
+      </FadeIn>
     </div>
   );
 }

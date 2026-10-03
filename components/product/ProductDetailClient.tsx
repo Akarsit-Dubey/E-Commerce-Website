@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Product, ProductColor } from "@/types/product";
 import { ProductGallery } from "./ProductGallery";
 import { PriceDisplay } from "./PriceDisplay";
@@ -17,8 +19,8 @@ import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useToast } from "@/hooks/useToast";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import { Heart, Truck, RotateCcw, ShieldCheck, Ruler, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Heart, Truck, RotateCcw, ShieldCheck, Ruler, Check, ShoppingBag } from "lucide-react";
+import { cn, formatPrice } from "@/lib/utils";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -33,6 +35,7 @@ export function ProductDetailClient({
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { showToast } = useToast();
   const { recentProducts, addRecentlyViewed } = useRecentlyViewed();
+  const shouldReduceMotion = useReducedMotion();
 
   const [selectedColor, setSelectedColor] = useState<ProductColor>(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0]);
@@ -40,6 +43,7 @@ export function ProductDetailClient({
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const isFavorited = isInWishlist(product.id);
 
@@ -47,6 +51,15 @@ export function ProductDetailClient({
   useEffect(() => {
     addRecentlyViewed(product.id);
   }, [product.id, addRecentlyViewed]);
+
+  // Show sticky bottom bar on mobile when scrolled past 500px
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyBar(window.scrollY > 550);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleAddToCart = () => {
     setIsAdding(true);
@@ -63,7 +76,7 @@ export function ProductDetailClient({
       setTimeout(() => {
         setIsAdded(false);
       }, 2000);
-    }, 300);
+    }, 280);
   };
 
   const handleWishlistToggle = () => {
@@ -115,12 +128,12 @@ export function ProductDetailClient({
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)] leading-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[var(--foreground)] leading-tight">
               {product.name}
             </h1>
 
             {product.tagline && (
-              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 leading-relaxed font-light">
                 {product.tagline}
               </p>
             )}
@@ -132,7 +145,7 @@ export function ProductDetailClient({
                 href="#reviews-heading"
                 className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-4"
               >
-                {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                {product.rating.toFixed(1)} ({product.reviewCount} verified reviews)
               </a>
             </div>
 
@@ -147,7 +160,7 @@ export function ProductDetailClient({
           </div>
 
           {/* Description */}
-          <p className="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed font-light">
             {product.description}
           </p>
 
@@ -155,7 +168,10 @@ export function ProductDetailClient({
           <div className="space-y-3 pt-2 border-t border-[var(--border)]">
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold uppercase tracking-wider text-[var(--foreground)]">
-                Color: <strong className="font-normal text-[var(--muted-foreground)]">{selectedColor.name}</strong>
+                Color:{" "}
+                <strong className="font-normal text-[var(--muted-foreground)]">
+                  {selectedColor.name}
+                </strong>
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -169,7 +185,7 @@ export function ProductDetailClient({
                     title={color.name}
                     className={cn(
                       "w-8 h-8 rounded-full border border-black/10 dark:border-white/10 transition-all cursor-pointer relative flex items-center justify-center",
-                      isSelected && "ring-2 ring-[var(--accent)] ring-offset-2 scale-105"
+                      isSelected && "ring-2 ring-[var(--accent)] ring-offset-2 scale-110"
                     )}
                     style={{ backgroundColor: color.hex }}
                   >
@@ -186,12 +202,15 @@ export function ProductDetailClient({
           <div className="space-y-3 pt-2">
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold uppercase tracking-wider text-[var(--foreground)]">
-                Size: <strong className="font-normal text-[var(--muted-foreground)]">{selectedSize}</strong>
+                Size:{" "}
+                <strong className="font-normal text-[var(--muted-foreground)]">
+                  {selectedSize}
+                </strong>
               </span>
               <button
                 type="button"
                 onClick={() => setIsSizeGuideOpen(true)}
-                className="inline-flex items-center gap-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-4"
+                className="inline-flex items-center gap-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-4 cursor-pointer"
               >
                 <Ruler className="w-3.5 h-3.5" />
                 <span>Size Guide</span>
@@ -202,9 +221,10 @@ export function ProductDetailClient({
               {product.sizes.map((size) => {
                 const isSelected = selectedSize === size;
                 return (
-                  <button
+                  <motion.button
                     key={size}
                     type="button"
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
                     onClick={() => setSelectedSize(size)}
                     className={cn(
                       "h-10 text-xs font-semibold rounded-xs border transition-all cursor-pointer flex items-center justify-center",
@@ -214,7 +234,7 @@ export function ProductDetailClient({
                     )}
                   >
                     {size}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -234,7 +254,7 @@ export function ProductDetailClient({
                 onClick={handleAddToCart}
                 isLoading={isAdding}
                 disabled={product.inventory <= 0}
-                className="flex-1 h-11 text-xs uppercase tracking-wider font-semibold"
+                className="flex-1 h-11 text-xs uppercase tracking-wider font-semibold shadow-md active:scale-[0.98]"
               >
                 {isAdded ? (
                   <>
@@ -248,19 +268,25 @@ export function ProductDetailClient({
                 )}
               </Button>
 
-              <button
+              <motion.button
                 type="button"
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.82 }}
                 onClick={handleWishlistToggle}
                 aria-label={isFavorited ? "Remove from wishlist" : "Add to wishlist"}
-                className="h-11 w-11 border border-[var(--border)] rounded-xs flex items-center justify-center text-[var(--foreground)] hover:text-rose-600 hover:border-rose-500/50 transition-colors bg-[var(--background)]"
+                className="h-11 w-11 border border-[var(--border)] rounded-xs flex items-center justify-center text-[var(--foreground)] hover:text-rose-600 hover:border-rose-500/50 transition-colors bg-[var(--background)] cursor-pointer"
               >
-                <Heart
-                  className={cn(
-                    "w-5 h-5 transition-transform active:scale-125",
-                    isFavorited && "fill-rose-500 text-rose-500"
-                  )}
-                />
-              </button>
+                <motion.div
+                  animate={isFavorited && !shouldReduceMotion ? { scale: [1, 1.35, 1] } : {}}
+                  transition={{ duration: 0.35 }}
+                >
+                  <Heart
+                    className={cn(
+                      "w-5 h-5 transition-colors",
+                      isFavorited && "fill-rose-500 text-rose-500"
+                    )}
+                  />
+                </motion.div>
+              </motion.button>
             </div>
           </div>
 
@@ -272,7 +298,7 @@ export function ProductDetailClient({
             </div>
             <div className="flex items-center gap-2.5">
               <RotateCcw className="w-4 h-4 text-[var(--foreground)] shrink-0" />
-              <span>30-day effortless returns with complimentary return labels</span>
+              <span>30-day effortless returns with prepaid shipping labels</span>
             </div>
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="w-4 h-4 text-[var(--foreground)] shrink-0" />
@@ -378,6 +404,57 @@ export function ProductDetailClient({
         </section>
       )}
 
+      {/* Sticky Mobile Add To Bag Bar */}
+      <AnimatePresence>
+        {showStickyBar && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-0 inset-x-0 z-40 bg-[var(--background)]/95 backdrop-blur-md border-t border-[var(--border)] p-3 lg:hidden shadow-2xl"
+          >
+            <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="relative w-10 h-12 bg-[var(--surface)] rounded-xs overflow-hidden shrink-0 border border-[var(--border)]">
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-[var(--foreground)] truncate">
+                    {product.name}
+                  </p>
+                  <p className="text-[11px] text-[var(--muted-foreground)]">
+                    {formatPrice(product.salePrice ?? product.price)} · Size {selectedSize}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                size="sm"
+                onClick={handleAddToCart}
+                isLoading={isAdding}
+                className="shrink-0 h-10 px-4 text-xs uppercase tracking-wider font-semibold"
+              >
+                {isAdded ? (
+                  <Check className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <>
+                    <ShoppingBag className="w-3.5 h-3.5 mr-1" />
+                    <span>Add to Bag</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Size Guide Modal */}
       <Modal
         isOpen={isSizeGuideOpen}
@@ -400,33 +477,33 @@ export function ProductDetailClient({
               <tbody className="text-[var(--muted-foreground)]">
                 <tr>
                   <td className="p-2.5 border border-[var(--border)] font-medium text-[var(--foreground)]">XS</td>
-                  <td className="p-2.5 border border-[var(--border)]">34 - 36" (86-91cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">28 - 30" (71-76cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">34 - 36" (86-91cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">34 - 36&quot; (86-91cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">28 - 30&quot; (71-76cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">34 - 36&quot; (86-91cm)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 border border-[var(--border)] font-medium text-[var(--foreground)]">S</td>
-                  <td className="p-2.5 border border-[var(--border)]">36 - 38" (91-96cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">30 - 32" (76-81cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">36 - 38" (91-96cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">36 - 38&quot; (91-96cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">30 - 32&quot; (76-81cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">36 - 38&quot; (91-96cm)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 border border-[var(--border)] font-medium text-[var(--foreground)]">M</td>
-                  <td className="p-2.5 border border-[var(--border)]">38 - 40" (96-101cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">32 - 34" (81-86cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">38 - 40" (96-101cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">38 - 40&quot; (96-101cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">32 - 34&quot; (81-86cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">38 - 40&quot; (96-101cm)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 border border-[var(--border)] font-medium text-[var(--foreground)]">L</td>
-                  <td className="p-2.5 border border-[var(--border)]">40 - 42" (101-106cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">34 - 36" (86-91cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">40 - 42" (101-106cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">40 - 42&quot; (101-106cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">34 - 36&quot; (86-91cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">40 - 42&quot; (101-106cm)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 border border-[var(--border)] font-medium text-[var(--foreground)]">XL</td>
-                  <td className="p-2.5 border border-[var(--border)]">42 - 45" (106-114cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">36 - 39" (91-99cm)</td>
-                  <td className="p-2.5 border border-[var(--border)]">42 - 45" (106-114cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">42 - 45&quot; (106-114cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">36 - 39&quot; (91-99cm)</td>
+                  <td className="p-2.5 border border-[var(--border)]">42 - 45&quot; (106-114cm)</td>
                 </tr>
               </tbody>
             </table>

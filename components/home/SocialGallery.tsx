@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { FadeIn } from "@/components/motion/MotionConfig";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -51,47 +52,48 @@ const SOCIAL_POSTS = [
 
 export function SocialGallery() {
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-        <div>
-          <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
-            #LivingWithNOVA
-          </span>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--foreground)] mt-1">
-            In Context & Living Spaces
-          </h2>
-        </div>
+    <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <FadeIn>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div>
+            <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
+              #LivingWithNOVA
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)] mt-1">
+              In Context & Living Spaces
+            </h2>
+          </div>
 
-        <a
-          href="https://instagram.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs uppercase tracking-wider font-semibold text-[var(--foreground)] hover:text-[var(--accent)] inline-flex items-center gap-1.5 transition-colors"
-        >
-          <InstagramIcon className="w-4 h-4" />
-          <span>Follow @nova.essentials</span>
-        </a>
-      </div>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs uppercase tracking-wider font-semibold text-[var(--foreground)] hover:text-[var(--accent)] inline-flex items-center gap-1.5 transition-colors group"
+          >
+            <InstagramIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>Follow @nova.essentials</span>
+          </a>
+        </div>
+      </FadeIn>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {SOCIAL_POSTS.map((post, idx) => (
-          <div
-            key={idx}
-            className="group relative aspect-square overflow-hidden rounded-xs bg-[var(--surface)] border border-[var(--border)]"
-          >
-            <Image
-              src={post.image}
-              alt={post.product}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center text-white">
-              <InstagramIcon className="w-5 h-5 mb-1.5" />
-              <p className="text-xs font-semibold">{post.handle}</p>
-              <p className="text-[10px] text-white/80 mt-0.5">{post.product}</p>
+          <FadeIn key={idx} delay={idx * 0.06}>
+            <div className="group relative aspect-square overflow-hidden rounded-xs bg-[var(--surface)] border border-[var(--border)]">
+              <Image
+                src={post.image}
+                alt={post.product}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center text-white backdrop-blur-[2px]">
+                <InstagramIcon className="w-5 h-5 mb-1.5" />
+                <p className="text-xs font-semibold">{post.handle}</p>
+                <p className="text-[10px] text-white/80 mt-0.5">{post.product}</p>
+              </div>
             </div>
-          </div>
+          </FadeIn>
         ))}
       </div>
     </section>

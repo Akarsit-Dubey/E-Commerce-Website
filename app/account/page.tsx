@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/Badge";
 import { safeLocalStorage } from "@/lib/storage";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
+import { motion, AnimatePresence } from "framer-motion";
+import { editorialEase } from "@/components/motion/MotionConfig";
 import {
   User,
   Package,
@@ -223,8 +225,16 @@ export default function AccountPage() {
 
         {/* Tab Content Panels */}
         <div className="lg:col-span-9">
-          {/* TAB 1: ORDERS */}
-          {activeTab === "orders" && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2, ease: editorialEase }}
+            >
+              {/* TAB 1: ORDERS */}
+              {activeTab === "orders" && (
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
                 <h2 className="text-base font-bold uppercase tracking-wider text-[var(--foreground)]">
@@ -516,6 +526,8 @@ export default function AccountPage() {
               </div>
             </div>
           )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 

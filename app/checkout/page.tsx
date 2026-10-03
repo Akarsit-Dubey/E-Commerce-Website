@@ -9,6 +9,8 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ShippingAddress, DeliveryMethod, Order } from "@/types/order";
 import { formatPrice } from "@/lib/utils";
 import { safeLocalStorage } from "@/lib/storage";
+import { motion } from "framer-motion";
+import { FadeIn } from "@/components/motion/MotionConfig";
 import {
   ShieldCheck,
   CreditCard,
@@ -164,37 +166,40 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <Breadcrumbs
-        items={[
-          { label: "Shop", href: "/shop" },
-          { label: "Cart", href: "/cart" },
-          { label: "Checkout" },
-        ]}
-        className="mb-6"
-      />
+      <FadeIn>
+        <Breadcrumbs
+          items={[
+            { label: "Shop", href: "/shop" },
+            { label: "Cart", href: "/cart" },
+            { label: "Checkout" },
+          ]}
+          className="mb-6"
+        />
 
-      {/* Demo Notice Banner */}
-      <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 rounded-xs text-xs mb-8 flex items-start gap-2.5">
-        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-semibold uppercase tracking-wider text-[11px]">
-            Demo Portfolio Showcase
-          </p>
-          <p className="mt-0.5 leading-relaxed">
-            This checkout flow is a client-side simulation. No live transactions will be billed, and no payment card will be charged.
-          </p>
+        {/* Demo Notice Banner */}
+        <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 rounded-xs text-xs mb-8 flex items-start gap-2.5">
+          <Info className="w-4 h-4 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold uppercase tracking-wider text-[11px]">
+              Demo Portfolio Showcase
+            </p>
+            <p className="mt-0.5 leading-relaxed">
+              This checkout flow is a client-side simulation. No live transactions will be billed, and no payment card will be charged.
+            </p>
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column: Checkout Forms */}
-        <form onSubmit={handlePlaceOrder} className="lg:col-span-7 space-y-10">
-          {submitError && (
-            <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 rounded-xs text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{submitError}</span>
-            </div>
-          )}
+        <FadeIn direction="left" delay={0.05} className="lg:col-span-7">
+          <form onSubmit={handlePlaceOrder} className="space-y-10">
+            {submitError && (
+              <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 rounded-xs text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{submitError}</span>
+              </div>
+            )}
 
           {/* Section 1: Contact Information */}
           <div className="space-y-4">
@@ -362,12 +367,14 @@ export default function CheckoutPage() {
               {DELIVERY_METHODS.map((method) => {
                 const isSelected = deliveryMethod.id === method.id;
                 return (
-                  <label
+                  <motion.label
                     key={method.id}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => setDeliveryMethod(method)}
                     className={`flex items-start justify-between p-4 rounded-xs border cursor-pointer transition-all ${
                       isSelected
-                        ? "border-[var(--foreground)] bg-[var(--surface)]"
+                        ? "border-[var(--foreground)] bg-[var(--surface)] ring-1 ring-[var(--foreground)]"
                         : "border-[var(--border)] bg-[var(--background)] hover:border-[var(--foreground)]/40"
                     }`}
                   >
@@ -377,7 +384,7 @@ export default function CheckoutPage() {
                         name="deliveryMethod"
                         checked={isSelected}
                         onChange={() => setDeliveryMethod(method)}
-                        className="mt-1 accent-[var(--foreground)]"
+                        className="mt-1 accent-[var(--foreground)] cursor-pointer"
                       />
                       <div>
                         <p className="text-xs font-bold text-[var(--foreground)]">
@@ -395,7 +402,7 @@ export default function CheckoutPage() {
                     <span className="text-xs font-bold text-[var(--foreground)] tabular-nums">
                       {method.price === 0 ? "Complimentary" : formatPrice(method.price)}
                     </span>
-                  </label>
+                  </motion.label>
                 );
               })}
             </div>
@@ -415,31 +422,35 @@ export default function CheckoutPage() {
 
             {/* Quick Demo Pay Switch */}
             <div className="grid grid-cols-2 gap-3">
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setPaymentType("card")}
-                className={`py-3 px-4 border text-xs font-semibold uppercase tracking-wider rounded-xs flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 border text-xs font-semibold uppercase tracking-wider rounded-xs flex items-center justify-center gap-2 cursor-pointer transition-colors ${
                   paymentType === "card"
                     ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
-                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
+                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                 }`}
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Credit / Debit</span>
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setPaymentType("apple-pay")}
-                className={`py-3 px-4 border text-xs font-semibold uppercase tracking-wider rounded-xs flex items-center justify-center gap-2 ${
+                className={`py-3 px-4 border text-xs font-semibold uppercase tracking-wider rounded-xs flex items-center justify-center gap-2 cursor-pointer transition-colors ${
                   paymentType === "apple-pay"
                     ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
-                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
+                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Express Mock Pay</span>
-              </button>
+              </motion.button>
             </div>
 
             {/* Card Inputs */}
@@ -509,88 +520,89 @@ export default function CheckoutPage() {
             </p>
           </div>
         </form>
+      </FadeIn>
 
-        {/* Right Column: Order Summary Sidebar */}
-        <aside className="lg:col-span-5">
-          <div className="p-6 rounded-xs border border-[var(--border)] bg-[var(--surface)] space-y-6 sticky top-28">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)] pb-3 border-b border-[var(--border)]">
-              Bag Summary ({summary.itemCount} Items)
-            </h3>
+      {/* Right Column: Order Summary Sidebar */}
+      <FadeIn direction="right" delay={0.1} className="lg:col-span-5">
+        <aside className="p-6 rounded-xs border border-[var(--border)] bg-[var(--surface)] space-y-6 sticky top-28">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--foreground)] pb-3 border-b border-[var(--border)]">
+            Bag Summary ({summary.itemCount} Items)
+          </h3>
 
-            {/* Items Mini List */}
-            <div className="divide-y divide-[var(--border)] max-h-80 overflow-y-auto pr-1">
-              {items.map((item) => (
-                <div key={item.id} className="py-3 flex gap-3 items-center text-xs">
-                  <div className="relative w-12 h-14 bg-[var(--background)] rounded-xs overflow-hidden shrink-0 border border-[var(--border)]">
-                    <Image
-                      src={item.product.images[0]}
-                      alt={item.product.name}
-                      fill
-                      sizes="48px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[var(--foreground)] truncate">
-                      {item.product.name}
-                    </p>
-                    <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">
-                      {item.selectedColor.name} · Size {item.selectedSize} · Qty {item.quantity}
-                    </p>
-                  </div>
-                  <span className="font-medium text-[var(--foreground)] tabular-nums">
-                    {formatPrice((item.product.salePrice ?? item.product.price) * item.quantity)}
-                  </span>
+          {/* Items Mini List */}
+          <div className="divide-y divide-[var(--border)] max-h-80 overflow-y-auto pr-1">
+            {items.map((item) => (
+              <div key={item.id} className="py-3 flex gap-3 items-center text-xs">
+                <div className="relative w-12 h-14 bg-[var(--background)] rounded-xs overflow-hidden shrink-0 border border-[var(--border)]">
+                  <Image
+                    src={item.product.images[0]}
+                    alt={item.product.name}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
                 </div>
-              ))}
-            </div>
-
-            {/* Calculations Breakdown */}
-            <div className="space-y-2 pt-4 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="text-[var(--foreground)] tabular-nums">
-                  {formatPrice(summary.subtotal)}
-                </span>
-              </div>
-              {summary.discount > 0 && (
-                <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                  <span>Promotion ({promoCode})</span>
-                  <span className="tabular-nums">-{formatPrice(summary.discount)}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[var(--foreground)] truncate">
+                    {item.product.name}
+                  </p>
+                  <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">
+                    {item.selectedColor.name} · Size {item.selectedSize} · Qty {item.quantity}
+                  </p>
                 </div>
-              )}
-              <div className="flex justify-between">
-                <span>Delivery ({deliveryMethod.title.split(" ")[0]})</span>
-                <span className="text-[var(--foreground)] tabular-nums">
-                  {finalShipping === 0 ? "Complimentary" : formatPrice(finalShipping)}
+                <span className="font-medium text-[var(--foreground)] tabular-nums">
+                  {formatPrice((item.product.salePrice ?? item.product.price) * item.quantity)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span>Estimated Sales Tax</span>
-                <span className="text-[var(--foreground)] tabular-nums">
-                  {formatPrice(summary.estimatedTax)}
-                </span>
-              </div>
-              <div className="flex justify-between pt-3 border-t border-[var(--border)] text-base font-bold text-[var(--foreground)]">
-                <span>Total Due</span>
-                <span className="tabular-nums">{formatPrice(finalTotal)}</span>
-              </div>
-            </div>
+            ))}
+          </div>
 
-            {/* Reassurance */}
-            <div className="pt-2 border-t border-[var(--border)] space-y-2 text-[11px] text-[var(--muted-foreground)]">
-              <div className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span>30-Day complimentary return privileges</span>
+          {/* Calculations Breakdown */}
+          <div className="space-y-2 pt-4 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span className="text-[var(--foreground)] tabular-nums">
+                {formatPrice(summary.subtotal)}
+              </span>
+            </div>
+            {summary.discount > 0 && (
+              <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                <span>Promotion ({promoCode})</span>
+                <span className="tabular-nums">-{formatPrice(summary.discount)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent)]" />
-                <span>Lifetime repair warranty included</span>
-              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Delivery ({deliveryMethod.title.split(" ")[0]})</span>
+              <span className="text-[var(--foreground)] tabular-nums">
+                {finalShipping === 0 ? "Complimentary" : formatPrice(finalShipping)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Estimated Sales Tax</span>
+              <span className="text-[var(--foreground)] tabular-nums">
+                {formatPrice(summary.estimatedTax)}
+              </span>
+            </div>
+            <div className="flex justify-between pt-3 border-t border-[var(--border)] text-base font-bold text-[var(--foreground)]">
+              <span>Total Due</span>
+              <span className="tabular-nums">{formatPrice(finalTotal)}</span>
+            </div>
+          </div>
+
+          {/* Reassurance */}
+          <div className="pt-2 border-t border-[var(--border)] space-y-2 text-[11px] text-[var(--muted-foreground)]">
+            <div className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>30-Day complimentary return privileges</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <span>Lifetime repair warranty included</span>
             </div>
           </div>
         </aside>
-      </div>
+      </FadeIn>
     </div>
-  );
+  </div>
+);
 }

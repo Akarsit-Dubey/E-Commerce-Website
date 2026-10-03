@@ -7,6 +7,8 @@ import { CATEGORIES } from "@/data/categories";
 import { Heart, User, Sun, Moon } from "lucide-react";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useTheme } from "@/hooks/useTheme";
+import { motion, useReducedMotion } from "framer-motion";
+import { editorialEase } from "@/components/motion/MotionConfig";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -16,48 +18,81 @@ interface MobileNavProps {
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const { wishlist } = useWishlist();
   const { resolvedTheme, toggleTheme } = useTheme();
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -15 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.35, ease: editorialEase },
+    },
+  };
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} side="left" title="Menu">
-      <div className="flex flex-col h-full justify-between">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col h-full justify-between"
+      >
         <div className="space-y-6 pt-2">
           {/* Main Links */}
           <div className="space-y-1">
-            <Link
-              href="/shop"
-              onClick={onClose}
-              className="block py-2.5 text-base font-medium tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
-            >
-              Shop All
-            </Link>
-            {CATEGORIES.map((category) => (
+            <motion.div variants={itemVariants}>
               <Link
-                key={category.id}
-                href={`/shop?category=${category.id}`}
+                href="/shop"
                 onClick={onClose}
-                className="block py-2.5 text-sm font-normal text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
+                className="block py-2.5 text-base font-semibold tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
               >
-                {category.name}
+                Shop All Collections
               </Link>
+            </motion.div>
+            {CATEGORIES.map((category) => (
+              <motion.div key={category.id} variants={itemVariants}>
+                <Link
+                  href={`/shop?category=${category.id}`}
+                  onClick={onClose}
+                  className="block py-2.5 text-sm font-normal text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
+                >
+                  {category.name}
+                </Link>
+              </motion.div>
             ))}
-            <Link
-              href="/about"
-              onClick={onClose}
-              className="block py-2.5 text-sm font-medium tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
-            >
-              Brand Story
-            </Link>
-            <Link
-              href="/faq"
-              onClick={onClose}
-              className="block py-2.5 text-sm font-medium tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
-            >
-              FAQ & Client Care
-            </Link>
+            <motion.div variants={itemVariants}>
+              <Link
+                href="/about"
+                onClick={onClose}
+                className="block py-2.5 text-sm font-medium tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
+              >
+                Brand Story & Ateliers
+              </Link>
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <Link
+                href="/faq"
+                onClick={onClose}
+                className="block py-2.5 text-sm font-medium tracking-wide text-[var(--foreground)] hover:text-[var(--accent)] transition-colors border-b border-[var(--border)]/40"
+              >
+                FAQ & Client Care
+              </Link>
+            </motion.div>
           </div>
 
           {/* Quick Access */}
-          <div className="pt-4 space-y-3">
+          <motion.div variants={itemVariants} className="pt-4 space-y-3">
             <p className="text-xs uppercase tracking-wider text-[var(--muted-foreground)] font-semibold">
               Account & Saved
             </p>
@@ -84,16 +119,19 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               className="flex items-center gap-2.5 py-2 text-sm text-[var(--foreground)] hover:text-[var(--accent)]"
             >
               <User className="w-4 h-4 text-[var(--muted-foreground)]" />
-              <span>My Account</span>
+              <span>My Account & Orders</span>
             </Link>
-          </div>
+          </motion.div>
         </div>
 
         {/* Footer controls inside drawer */}
-        <div className="pt-8 pb-4 border-t border-[var(--border)] flex items-center justify-between">
+        <motion.div
+          variants={itemVariants}
+          className="pt-8 pb-4 border-t border-[var(--border)] flex items-center justify-between"
+        >
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-[var(--foreground)] hover:text-[var(--accent)] p-2 rounded-sm bg-[var(--surface)]"
+            className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-[var(--foreground)] hover:text-[var(--accent)] p-2 rounded-xs bg-[var(--surface)] active:scale-95"
           >
             {resolvedTheme === "dark" ? (
               <>
@@ -111,8 +149,8 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           <span className="text-xs text-[var(--muted-foreground)]">
             NOVA Studio © 2026
           </span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </Drawer>
   );
 }

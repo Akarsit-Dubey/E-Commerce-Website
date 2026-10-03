@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { PriceDisplay } from "@/components/product/PriceDisplay";
 import { Heart, Trash2, ShoppingBag } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn, editorialEase } from "@/components/motion/MotionConfig";
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist, clearWishlist, isHydrated } = useWishlist();
@@ -62,7 +64,7 @@ export default function WishlistPage() {
       </div>
 
       {wishlist.length === 0 ? (
-        <div className="py-24 text-center space-y-4 max-w-md mx-auto">
+        <FadeIn className="py-24 text-center space-y-4 max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-[var(--surface)] flex items-center justify-center mx-auto text-[var(--muted-foreground)]">
             <Heart className="w-8 h-8 stroke-[1.5]" />
           </div>
@@ -75,70 +77,76 @@ export default function WishlistPage() {
           <Link href="/shop" className="inline-block pt-2">
             <Button size="lg">Explore Collections</Button>
           </Link>
-        </div>
+        </FadeIn>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {wishlist.map((product) => (
-            <div
-              key={product.id}
-              className="flex flex-col rounded-xs border border-[var(--border)] bg-[var(--card)] overflow-hidden group hover:border-[var(--foreground)]/40 transition-colors"
-            >
-              <Link
-                href={`/products/${product.slug}`}
-                className="relative aspect-[3/4] bg-[var(--surface)] overflow-hidden"
+          <AnimatePresence mode="popLayout" initial={false}>
+            {wishlist.map((product) => (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.88, transition: { duration: 0.2, ease: editorialEase } }}
+                className="flex flex-col rounded-xs border border-[var(--border)] bg-[var(--card)] overflow-hidden group hover:border-[var(--foreground)]/40 transition-colors"
               >
-                <Image
-                  src={product.images[0]}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
+                <Link
+                  href={`/products/${product.slug}`}
+                  className="relative aspect-[3/4] bg-[var(--surface)] overflow-hidden"
+                >
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
 
-              <div className="p-4 flex flex-col justify-between flex-1">
-                <div>
-                  <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">
-                    {product.category}
-                  </span>
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-1">
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className="hover:text-[var(--accent)] transition-colors"
-                    >
-                      {product.name}
-                    </Link>
-                  </h3>
-                  <div className="mt-2">
-                    <PriceDisplay
-                      price={product.price}
-                      salePrice={product.salePrice}
+                <div className="p-4 flex flex-col justify-between flex-1">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">
+                      {product.category}
+                    </span>
+                    <h3 className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-1">
+                      <Link
+                        href={`/products/${product.slug}`}
+                        className="hover:text-[var(--accent)] transition-colors"
+                      >
+                        {product.name}
+                      </Link>
+                    </h3>
+                    <div className="mt-2">
+                      <PriceDisplay
+                        price={product.price}
+                        salePrice={product.salePrice}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-[var(--border)] flex items-center gap-2">
+                    <Button
+                      onClick={() => handleMoveToCart(product)}
                       size="sm"
-                    />
+                      className="flex-1 text-xs uppercase tracking-wider"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5 mr-1.5" />
+                      <span>Move to Bag</span>
+                    </Button>
+
+                    <button
+                      onClick={() => removeFromWishlist(product.id)}
+                      aria-label={`Remove ${product.name} from wishlist`}
+                      className="p-2 border border-[var(--border)] rounded-xs text-[var(--muted-foreground)] hover:text-rose-600 hover:border-rose-500/50 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-
-                <div className="pt-4 mt-4 border-t border-[var(--border)] flex items-center gap-2">
-                  <Button
-                    onClick={() => handleMoveToCart(product)}
-                    size="sm"
-                    className="flex-1 text-xs uppercase tracking-wider"
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5 mr-1.5" />
-                    <span>Move to Bag</span>
-                  </Button>
-
-                  <button
-                    onClick={() => removeFromWishlist(product.id)}
-                    aria-label={`Remove ${product.name} from wishlist`}
-                    className="p-2 border border-[var(--border)] rounded-xs text-[var(--muted-foreground)] hover:text-rose-600 hover:border-rose-500/50 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>

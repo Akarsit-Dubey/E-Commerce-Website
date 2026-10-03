@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { PRODUCTS } from "@/data/products";
 import { FilterState, ProductCategory, SortOption } from "@/types/product";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -10,6 +11,7 @@ import { ProductSort } from "@/components/product/ProductSort";
 import { Drawer } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { FadeIn } from "@/components/motion/MotionConfig";
 import { SlidersHorizontal, LayoutGrid, List, X, Search } from "lucide-react";
 
 const ITEMS_PER_PAGE = 8;
@@ -17,6 +19,7 @@ const ITEMS_PER_PAGE = 8;
 export function ShopClient() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") as ProductCategory | null;
+  const shouldReduceMotion = useReducedMotion();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({
@@ -157,40 +160,42 @@ export function ShopClient() {
       />
 
       {/* Header & Page Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-[var(--border)]">
-        <div>
-          <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
-            Permanent & Seasonal Editions
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--foreground)] capitalize mt-1">
-            {filters.category === "all" ? "All Collections" : `${filters.category}`}
-          </h1>
-          <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl">
-            Thoughtfully engineered essentials constructed with pure wool, organic cotton, Portuguese leather, and Grade-5 titanium.
-          </p>
-        </div>
+      <FadeIn>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-[var(--border)]">
+          <div>
+            <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
+              Permanent & Seasonal Editions
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--foreground)] capitalize mt-1">
+              {filters.category === "all" ? "All Collections" : `${filters.category}`}
+            </h1>
+            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl font-light leading-relaxed">
+              Thoughtfully engineered essentials constructed with pure wool, organic cotton, Portuguese leather, and Grade-5 titanium.
+            </p>
+          </div>
 
-        {/* Quick Search inside Shop */}
-        <div className="relative w-full md:w-72">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search in collections..."
-            aria-label="Filter products by keyword"
-            className="w-full bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] rounded-xs py-2 pl-9 pr-8 text-xs focus:outline-none focus:border-[var(--foreground)]"
-          />
-          <Search className="w-4 h-4 text-[var(--muted-foreground)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          {/* Quick Search inside Shop */}
+          <div className="relative w-full md:w-72">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search in collections..."
+              aria-label="Filter products by keyword"
+              className="w-full bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] rounded-xs py-2 pl-9 pr-8 text-xs focus:outline-none focus:border-[var(--foreground)]"
+            />
+            <Search className="w-4 h-4 text-[var(--muted-foreground)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
       {/* Control Bar: Product Count, Mobile Filter Trigger, Sort, View Toggle */}
       <div className="flex items-center justify-between py-5 border-b border-[var(--border)] gap-4 flex-wrap">
@@ -213,28 +218,42 @@ export function ShopClient() {
 
         {/* Active Filter Chips */}
         <div className="flex items-center gap-2 flex-wrap">
-          {filters.sizes.map((size) => (
-            <span
-              key={size}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--surface)] text-[var(--foreground)] text-[11px] border border-[var(--border)]"
-            >
-              Size: {size}
-              <button onClick={() => removeSizeFilter(size)} className="hover:text-rose-500">
-                <X className="w-3 h-3" />
-              </button>
-            </span>
-          ))}
-          {filters.colors.map((color) => (
-            <span
-              key={color}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--surface)] text-[var(--foreground)] text-[11px] border border-[var(--border)]"
-            >
-              Color: {color}
-              <button onClick={() => removeColorFilter(color)} className="hover:text-rose-500">
-                <X className="w-3 h-3" />
-              </button>
-            </span>
-          ))}
+          <AnimatePresence>
+            {filters.sizes.map((size) => (
+              <motion.span
+                key={size}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--surface)] text-[var(--foreground)] text-[11px] font-medium border border-[var(--border)]"
+              >
+                Size: {size}
+                <button
+                  onClick={() => removeSizeFilter(size)}
+                  className="hover:text-rose-500 cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </motion.span>
+            ))}
+            {filters.colors.map((color) => (
+              <motion.span
+                key={color}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--surface)] text-[var(--foreground)] text-[11px] font-medium border border-[var(--border)]"
+              >
+                Color: {color}
+                <button
+                  onClick={() => removeColorFilter(color)}
+                  className="hover:text-rose-500 cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </motion.span>
+            ))}
+          </AnimatePresence>
         </div>
 
         <div className="flex items-center gap-3 ml-auto">
@@ -249,7 +268,7 @@ export function ShopClient() {
             <button
               onClick={() => setViewMode("grid")}
               aria-label="Grid layout"
-              className={`p-1.5 rounded-xs transition-colors ${
+              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
                 viewMode === "grid"
                   ? "bg-[var(--background)] text-[var(--foreground)] shadow-xs"
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -260,7 +279,7 @@ export function ShopClient() {
             <button
               onClick={() => setViewMode("list")}
               aria-label="List layout"
-              className={`p-1.5 rounded-xs transition-colors ${
+              className={`p-1.5 rounded-xs transition-colors cursor-pointer ${
                 viewMode === "list"
                   ? "bg-[var(--background)] text-[var(--foreground)] shadow-xs"
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -285,12 +304,22 @@ export function ShopClient() {
 
         {/* Product Grid Area */}
         <div className="lg:col-span-3">
-          <ProductGrid
-            products={displayedProducts}
-            viewMode={viewMode}
-            columns={3}
-            onResetFilters={handleClearAllFilters}
-          />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${filters.category}-${sortOption}-${viewMode}-${searchQuery}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.25 }}
+            >
+              <ProductGrid
+                products={displayedProducts}
+                viewMode={viewMode}
+                columns={3}
+                onResetFilters={handleClearAllFilters}
+              />
+            </motion.div>
+          </AnimatePresence>
 
           {/* Load More Button */}
           {hasMore && (
