@@ -103,12 +103,7 @@ export function SearchClient() {
           <input
             type="search"
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              if (e.target.value.length > 2) {
-                addSearch(e.target.value);
-              }
-            }}
+            onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && query.trim()) {
                 handleSearchSubmit(query);

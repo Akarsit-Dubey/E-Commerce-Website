@@ -203,15 +203,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const moveToCart = useCallback((id: string) => {
-    setSavedItems((savedPrev) => {
-      const itemToMove = savedPrev.find((s) => s.id === id);
-      if (!itemToMove) return savedPrev;
+  const moveToCart = useCallback(
+    (id: string) => {
+      const itemToMove = savedItems.find((s) => s.id === id);
+      if (!itemToMove) return;
 
       addItem(itemToMove.product, itemToMove.selectedColor, itemToMove.selectedSize, 1);
-      return savedPrev.filter((s) => s.id !== id);
-    });
-  }, [addItem]);
+      setSavedItems((prev) => prev.filter((s) => s.id !== id));
+    },
+    [savedItems, addItem]
+  );
 
   const removeSavedItem = useCallback((id: string) => {
     setSavedItems((prev) => prev.filter((item) => item.id !== id));

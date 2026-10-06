@@ -39,12 +39,10 @@ export function ShopClient() {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
-  // Sync with URL params if category changes
+  // Sync with URL params if category changes or is cleared
   useEffect(() => {
     const cat = searchParams.get("category") as ProductCategory | null;
-    if (cat) {
-      setFilters((prev) => ({ ...prev, category: cat }));
-    }
+    setFilters((prev) => ({ ...prev, category: cat || "all" }));
   }, [searchParams]);
 
   // Reset pagination when filters or sort change
@@ -134,6 +132,9 @@ export function ShopClient() {
       inStockOnly: false,
     });
     setSearchQuery("");
+    if (searchParams.get("category")) {
+      router.replace("/shop", { scroll: false });
+    }
   };
 
   const removeSizeFilter = (size: string) => {
