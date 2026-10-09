@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ShieldCheck, Globe, Sparkles } from "lucide-react";
@@ -72,25 +71,23 @@ export function EditorialHero() {
           transition={{ duration: 0.5, delay: 0.58, ease: editorialEase }}
           className="mt-9 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
         >
-          <Link href="/shop" className="w-full sm:w-auto">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto bg-white text-black hover:bg-neutral-100 font-semibold uppercase tracking-wider text-xs px-8 h-12 shadow-xl hover:scale-[1.02] transition-transform"
-            >
-              <span>Explore The Collection</span>
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
+          <Button
+            href="/shop"
+            size="lg"
+            className="w-full sm:w-auto bg-white text-black hover:bg-neutral-100 font-semibold uppercase tracking-wider text-xs px-8 h-12 shadow-xl hover:scale-[1.02] transition-transform"
+          >
+            <span>Explore The Collection</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
 
-          <Link href="/about" className="w-full sm:w-auto">
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto border-white/35 text-white hover:bg-white/15 uppercase tracking-wider text-xs px-7 h-12 backdrop-blur-xs hover:border-white transition-colors"
-            >
-              The NOVA Manifesto
-            </Button>
-          </Link>
+          <Button
+            href="/about"
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto border-white/35 text-white hover:bg-white/15 uppercase tracking-wider text-xs px-7 h-12 backdrop-blur-xs hover:border-white transition-colors"
+          >
+            The NOVA Manifesto
+          </Button>
         </motion.div>
 
         {/* Step 5: Supporting Value Pillars */}

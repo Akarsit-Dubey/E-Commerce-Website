@@ -61,19 +61,15 @@ function SuccessContent() {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-        <Link href="/shop" className="w-full sm:w-auto">
-          <Button size="md" className="w-full sm:w-auto px-8">
-            <span>Continue Shopping</span>
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
+        <Button href="/shop" size="md" className="w-full sm:w-auto px-8">
+          <span>Continue Shopping</span>
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
 
-        <Link href="/account" className="w-full sm:w-auto">
-          <Button variant="outline" size="md" className="w-full sm:w-auto px-6">
-            <Home className="w-4 h-4 mr-2" />
-            <span>View Account Orders</span>
-          </Button>
-        </Link>
+        <Button href="/account" variant="outline" size="md" className="w-full sm:w-auto px-6">
+          <Home className="w-4 h-4 mr-2" />
+          <span>View Account Orders</span>
+        </Button>
       </div>
     </div>
   );

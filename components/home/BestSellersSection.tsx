@@ -98,11 +98,9 @@ export function BestSellersSection() {
 
         {/* Mobile bottom button */}
         <div className="mt-12 text-center sm:hidden">
-          <Link href="/shop" className="w-full inline-block">
-            <Button variant="outline" className="w-full">
-              View All Products
-            </Button>
-          </Link>
+          <Button href="/shop" variant="outline" className="w-full">
+            View All Products
+          </Button>
         </div>
       </div>
     </section>

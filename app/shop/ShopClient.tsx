@@ -19,6 +19,38 @@ import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 8;
 
+export const COLOR_FAMILIES: Record<string, string[]> = {
+  black: ["black", "noir", "onyx", "obsidian", "charcoal", "ink", "basalt", "jet", "dlc", "pitch"],
+  white: ["white", "chalk", "alabaster", "ivory", "cream", "oatmeal", "optic", "crystal"],
+  grey: ["grey", "gray", "slate", "silver", "titanium", "smoke", "stone", "pebble", "concrete", "charcoal"],
+  camel: ["camel", "tan", "honey", "chestnut", "cognac", "vachetta", "sand", "coyote", "espresso"],
+  terracotta: ["terracotta", "clay", "wine", "oxblood", "cordovan", "earth", "amber"],
+  olive: ["olive", "sage", "moss", "green", "forest"],
+  blue: ["blue", "navy", "ink", "bengal", "indigo", "oxford"],
+};
+
+function matchesKeyword(text: string, keyword: string): boolean {
+  if (keyword.length <= 3) {
+    const regex = new RegExp(`\\b${keyword}\\b`, "i");
+    return regex.test(text);
+  }
+  return text.toLowerCase().includes(keyword.toLowerCase());
+}
+
+export function matchesColorFilter(productColorName: string, filterColor: string): boolean {
+  const pName = productColorName.toLowerCase();
+  const fName = filterColor.toLowerCase();
+
+  if (matchesKeyword(pName, fName)) return true;
+
+  const familyKeywords = COLOR_FAMILIES[fName];
+  if (familyKeywords) {
+    return familyKeywords.some((keyword) => matchesKeyword(pName, keyword));
+  }
+
+  return false;
+}
+
 export function ShopClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -83,11 +115,11 @@ export function ShopClient() {
         return false;
       }
 
-      // Colors
+      // Colors with Luxury Shade Mapping
       if (
         filters.colors.length > 0 &&
         !filters.colors.some((colorName) =>
-          product.colors.some((c) => c.name.toLowerCase().includes(colorName.toLowerCase()))
+          product.colors.some((c) => matchesColorFilter(c.name, colorName))
         )
       ) {
         return false;
@@ -123,6 +155,17 @@ export function ShopClient() {
   const displayedProducts = sortedProducts.slice(0, visibleCount);
   const hasMore = visibleCount < sortedProducts.length;
 
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    if (newFilters.category !== filters.category) {
+      if (newFilters.category === "all") {
+        router.replace("/shop", { scroll: false });
+      } else {
+        router.replace(`/shop?category=${newFilters.category}`, { scroll: false });
+      }
+    }
+  };
+
   const handleClearAllFilters = () => {
     setFilters({
       category: "all",
@@ -151,6 +194,16 @@ export function ShopClient() {
     }));
   };
 
+  const activeCategoryMeta = CATEGORIES.find((c) => c.id === filters.category);
+  const categoryTitle = activeCategoryMeta
+    ? activeCategoryMeta.name
+    : filters.category === "all"
+    ? "All Collections"
+    : filters.category;
+  const categoryDescription = activeCategoryMeta
+    ? activeCategoryMeta.description
+    : "Thoughtfully engineered essentials constructed with pure wool, organic cotton, Portuguese leather, and Grade-5 titanium.";
+
   return (
     <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12">
       {/* Breadcrumbs */}
@@ -158,7 +211,7 @@ export function ShopClient() {
         items={[
           { label: "Shop", href: "/shop" },
           ...(filters.category !== "all"
-            ? [{ label: filters.category.toUpperCase() }]
+            ? [{ label: categoryTitle }]
             : []),
         ]}
         className="mb-6"
@@ -171,11 +224,11 @@ export function ShopClient() {
             <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
               Permanent & Seasonal Editions
             </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--foreground)] capitalize mt-1">
-              {filters.category === "all" ? "All Collections" : `${filters.category}`}
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--foreground)] mt-1">
+              {categoryTitle}
             </h1>
             <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1.5 max-w-xl font-light leading-relaxed">
-              Thoughtfully engineered essentials constructed with pure wool, organic cotton, Portuguese leather, and Grade-5 titanium.
+              {categoryDescription}
             </p>
           </div>
 
@@ -207,7 +260,7 @@ export function ShopClient() {
             <button
               onClick={() => {
                 setFilters((prev) => ({ ...prev, category: "all" }));
-                router.replace("/shop");
+                router.replace("/shop", { scroll: false });
               }}
               className={cn(
                 "flex items-center gap-2 px-3.5 py-1.5 rounded-xs border text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer",
@@ -227,7 +280,7 @@ export function ShopClient() {
                   key={cat.id}
                   onClick={() => {
                     setFilters((prev) => ({ ...prev, category: cat.id }));
-                    router.replace(`/shop?category=${cat.id}`);
+                    router.replace(`/shop?category=${cat.id}`, { scroll: false });
                   }}
                   className={cn(
                     "flex items-center gap-2.5 px-3 py-1.5 rounded-xs border text-xs font-medium transition-all cursor-pointer",
@@ -354,7 +407,7 @@ export function ShopClient() {
         <aside className="hidden lg:block lg:col-span-1">
           <ProductFilters
             filters={filters}
-            onFilterChange={setFilters}
+            onFilterChange={handleFilterChange}
             onClearFilters={handleClearAllFilters}
           />
         </aside>
@@ -411,7 +464,7 @@ export function ShopClient() {
       >
         <ProductFilters
           filters={filters}
-          onFilterChange={setFilters}
+          onFilterChange={handleFilterChange}
           onClearFilters={handleClearAllFilters}
         />
       </Drawer>

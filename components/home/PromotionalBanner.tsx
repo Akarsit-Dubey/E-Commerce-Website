@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FadeIn } from "@/components/motion/MotionConfig";
@@ -40,18 +39,14 @@ export function PromotionalBanner() {
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row gap-4">
-              <Link href="/shop?category=clothing">
-                <Button size="md" className="w-full sm:w-auto">
-                  <span>Shop Knitwear</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
-              </Link>
+              <Button href="/shop?category=clothing" size="md" className="w-full sm:w-auto">
+                <span>Shop Knitwear</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
 
-              <Link href="/about">
-                <Button variant="outline" size="md" className="w-full sm:w-auto">
-                  Read Sourcing Report
-                </Button>
-              </Link>
+              <Button href="/about" variant="outline" size="md" className="w-full sm:w-auto">
+                Read Sourcing Report
+              </Button>
             </div>
           </div>
         </div>

@@ -86,15 +86,14 @@ export function AsymmetricSpotlight() {
                 />
 
                 <div className="flex items-center gap-3">
-                  <Link href={`/products/${centerpiece.slug}`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white/40 text-white hover:bg-white/20 text-xs uppercase tracking-wider backdrop-blur-xs"
-                    >
-                      View Piece
-                    </Button>
-                  </Link>
+                  <Button
+                    href={`/products/${centerpiece.slug}`}
+                    variant="outline"
+                    size="sm"
+                    className="border-white/40 text-white hover:bg-white/20 text-xs uppercase tracking-wider backdrop-blur-xs"
+                  >
+                    View Piece
+                  </Button>
 
                   <Button
                     size="sm"

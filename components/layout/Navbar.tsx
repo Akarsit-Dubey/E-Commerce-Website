@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { Search, ShoppingBag, Heart, User, Sun, Moon, Menu } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
@@ -21,8 +21,78 @@ const NAV_LINKS = [
   { label: "Story", href: "/about" },
 ];
 
-export function Navbar() {
+function DesktopNavLinksContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category");
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <nav className="hidden lg:flex items-center gap-7" aria-label="Main Navigation">
+      {NAV_LINKS.map((link) => {
+        let isActive = false;
+        if (link.href === "/about") {
+          isActive = pathname === "/about";
+        } else if (link.href === "/shop") {
+          isActive = pathname === "/shop" && (!currentCategory || currentCategory === "all");
+        } else if (link.href.startsWith("/shop?category=")) {
+          const targetCategory = link.href.split("category=")[1];
+          isActive = pathname === "/shop" && currentCategory === targetCategory;
+        }
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "text-xs uppercase tracking-widest transition-colors font-medium relative py-1 hover:text-[var(--foreground)]",
+              isActive
+                ? "text-[var(--foreground)]"
+                : "text-[var(--muted-foreground)]"
+            )}
+          >
+            {link.label}
+            {isActive && (
+              <motion.span
+                layoutId="activeNavUnderline"
+                className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[var(--accent)]"
+                transition={{
+                  type: shouldReduceMotion ? "tween" : "spring",
+                  stiffness: 380,
+                  damping: 30,
+                }}
+              />
+            )}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function DesktopNavLinks() {
+  return (
+    <React.Suspense
+      fallback={
+        <nav className="hidden lg:flex items-center gap-7" aria-label="Main Navigation">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-xs uppercase tracking-widest transition-colors font-medium relative py-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      }
+    >
+      <DesktopNavLinksContent />
+    </React.Suspense>
+  );
+}
+
+export function Navbar() {
   const { summary, openCart, isHydrated: cartHydrated } = useCart();
   const { wishlist, isHydrated: wishlistHydrated } = useWishlist();
   const { resolvedTheme, toggleTheme } = useTheme();
@@ -110,39 +180,7 @@ export function Navbar() {
             </div>
 
             {/* Desktop Navigation Links with animated active underline */}
-            <nav className="hidden lg:flex items-center gap-7" aria-label="Main Navigation">
-              {NAV_LINKS.map((link) => {
-                const isActive =
-                  pathname === link.href ||
-                  (link.href !== "/shop" && pathname.startsWith(link.href));
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "text-xs uppercase tracking-widest transition-colors font-medium relative py-1 hover:text-[var(--foreground)]",
-                      isActive
-                        ? "text-[var(--foreground)]"
-                        : "text-[var(--muted-foreground)]"
-                    )}
-                  >
-                    {link.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="activeNavUnderline"
-                        className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[var(--accent)]"
-                        transition={{
-                          type: shouldReduceMotion ? "tween" : "spring",
-                          stiffness: 380,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+            <DesktopNavLinks />
 
             {/* Right Action Icons with micro-interactions */}
             <div className="flex items-center gap-1 sm:gap-2">

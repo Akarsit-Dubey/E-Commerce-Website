@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Product, ProductColor } from "@/types/product";
+import { CATEGORIES } from "@/data/categories";
 import { ProductGallery } from "./ProductGallery";
 import { PriceDisplay } from "./PriceDisplay";
 import { RatingStars } from "@/components/ui/RatingStars";
@@ -91,6 +92,9 @@ export function ProductDetailClient({
   // Filter out current product from recently viewed
   const otherRecent = recentProducts.filter((p) => p.id !== product.id).slice(0, 4);
 
+  const categoryObj = CATEGORIES.find((c) => c.id === product.category);
+  const categoryLabel = categoryObj ? categoryObj.name : product.category;
+
   return (
     <div className="max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12">
       {/* Breadcrumbs */}
@@ -98,7 +102,7 @@ export function ProductDetailClient({
         items={[
           { label: "Shop", href: "/shop" },
           {
-            label: product.category.toUpperCase(),
+            label: categoryLabel,
             href: `/shop?category=${product.category}`,
           },
           { label: product.name },
@@ -119,7 +123,7 @@ export function ProductDetailClient({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--accent)]">
-                {product.category}
+                {categoryLabel}
               </span>
               {product.inventory < 15 && product.inventory > 0 && (
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-xs">

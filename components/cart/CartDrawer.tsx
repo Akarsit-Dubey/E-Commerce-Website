@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Drawer } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
@@ -127,17 +126,13 @@ export function CartDrawer() {
 
             {/* Actions */}
             <div className="grid grid-cols-1 gap-2 pt-1">
-              <Link href="/checkout" onClick={closeCart} className="w-full">
-                <Button className="w-full h-12 flex items-center justify-between px-6">
-                  <span>Proceed to Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/cart" onClick={closeCart} className="w-full text-center">
-                <Button variant="ghost" size="sm" className="w-full text-xs">
-                  View Full Bag Details
-                </Button>
-              </Link>
+              <Button href="/checkout" onClick={closeCart} className="w-full h-12 flex items-center justify-between px-6">
+                <span>Proceed to Checkout</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <Button href="/cart" onClick={closeCart} variant="ghost" size="sm" className="w-full text-xs">
+                View Full Bag Details
+              </Button>
             </div>
           </div>
         ) : null
@@ -184,9 +179,9 @@ export function CartDrawer() {
                 Discover modern minimalist essentials designed for enduring everyday performance.
               </p>
             </div>
-            <Link href="/shop" onClick={closeCart} className="inline-block pt-2">
-              <Button size="sm">Explore Collections</Button>
-            </Link>
+            <Button href="/shop" onClick={closeCart} size="sm" className="inline-block pt-2">
+              Explore Collections
+            </Button>
           </div>
         ) : (
           /* Item List with Staggered Animations */

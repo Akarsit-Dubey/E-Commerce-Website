@@ -95,9 +95,9 @@ export default function CartPage() {
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">
             Take a moment to explore our permanent collections and seasonal arrivals.
           </p>
-          <Link href="/shop" className="inline-block pt-2">
-            <Button size="lg">Discover Collections</Button>
-          </Link>
+          <Button href="/shop" size="lg" className="inline-block pt-2">
+            Discover Collections
+          </Button>
         </FadeIn>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
@@ -278,12 +278,10 @@ export default function CartPage() {
               </div>
 
               {/* Checkout CTA */}
-              <Link href="/checkout" className="block w-full">
-                <Button className="w-full h-12 flex items-center justify-between px-6 uppercase tracking-wider text-xs font-semibold">
-                  <span>Checkout Now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+              <Button href="/checkout" className="w-full h-12 flex items-center justify-between px-6 uppercase tracking-wider text-xs font-semibold">
+                <span>Checkout Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
 
               {/* Trust Badges */}
               <div className="pt-4 border-t border-[var(--border)] space-y-2 text-[11px] text-[var(--muted-foreground)]">

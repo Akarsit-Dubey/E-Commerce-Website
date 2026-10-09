@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
@@ -178,12 +177,10 @@ export default function AboutPage() {
           Quiet luxury engineered for purposeful movement and daily living.
         </p>
         <div className="pt-2">
-          <Link href="/shop">
-            <Button size="lg" className="px-8">
-              <span>Explore The Collection</span>
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
+          <Button href="/shop" size="lg" className="px-8">
+            <span>Explore The Collection</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
       </div>
     </div>

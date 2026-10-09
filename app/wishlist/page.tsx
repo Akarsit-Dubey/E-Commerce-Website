@@ -74,9 +74,9 @@ export default function WishlistPage() {
           <p className="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">
             Curate your personal collection of architectural tailoring, cashmere essentials, and crafted leather accessories.
           </p>
-          <Link href="/shop" className="inline-block pt-2">
-            <Button size="lg">Explore Collections</Button>
-          </Link>
+          <Button href="/shop" size="lg" className="inline-block pt-2">
+            Explore Collections
+          </Button>
         </FadeIn>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

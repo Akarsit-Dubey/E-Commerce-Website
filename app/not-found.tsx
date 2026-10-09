@@ -43,17 +43,13 @@ export default function NotFound() {
         </div>
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link href="/" className="w-full sm:w-auto">
-            <Button size="md" className="w-full sm:w-auto px-6">
-              <span>Return Home</span>
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Button>
-          </Link>
-          <Link href="/shop" className="w-full sm:w-auto">
-            <Button variant="outline" size="md" className="w-full sm:w-auto px-6">
-              Browse All Products
-            </Button>
-          </Link>
+          <Button href="/" size="md" className="w-full sm:w-auto px-6">
+            <span>Return Home</span>
+            <ArrowRight className="w-4 h-4 ml-1.5" />
+          </Button>
+          <Button href="/shop" variant="outline" size="md" className="w-full sm:w-auto px-6">
+            Browse All Products
+          </Button>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { FAQ_DATA } from "@/data/faq";
 import { Accordion } from "@/components/ui/Accordion";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -86,19 +85,15 @@ export default function FAQPage() {
         </p>
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a href="mailto:concierge@nova-essentials.com">
-            <Button size="sm" className="w-full sm:w-auto">
-              <Mail className="w-3.5 h-3.5 mr-1.5" />
-              <span>concierge@nova-essentials.com</span>
-            </Button>
-          </a>
+          <Button href="mailto:concierge@nova-essentials.com" size="sm" className="w-full sm:w-auto">
+            <Mail className="w-3.5 h-3.5 mr-1.5" />
+            <span>concierge@nova-essentials.com</span>
+          </Button>
 
-          <Link href="/about">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
-              <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-              <span>Read Brand Manifesto</span>
-            </Button>
-          </Link>
+          <Button href="/about" variant="outline" size="sm" className="w-full sm:w-auto">
+            <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+            <span>Read Brand Manifesto</span>
+          </Button>
         </div>
       </div>
     </div>
